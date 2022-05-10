@@ -4,6 +4,7 @@ export class Piece {
     #color;
     #offset_x;
     #offest_y;
+    #special;
 
     constructor(image, type, color, grid_size) {
         this.#image = image;
@@ -11,6 +12,11 @@ export class Piece {
         this.#color = color;
         this.#offset_x = Math.floor((grid_size - image.width) / 2);
         this.#offest_y = Math.floor((grid_size - image.height) / 2);
+        this.#special = [true, true];
+    }
+
+    getSpecial() {
+        return this.#special;
     }
 
     getType() {

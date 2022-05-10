@@ -10,8 +10,15 @@ body {
 #wrapper {
     max-height: 100vh;
     overflow: hidden;
+    display: flex;
+
+}
+
+button {
+    
 }
 
 canvas {
-    
+    border-radius: 1ch;
+    margin: auto;
 }

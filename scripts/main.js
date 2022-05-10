@@ -1,6 +1,8 @@
 import { LoadImage } from "./image_loader.js";
 import { Piece } from "./piece.js";
 import { IsMoveValid } from "./logic.js";
+import { InBounds } from "./logic.js";
+import { IsAttackValid } from "./logic.js";
 
 const images_array = [];
 
@@ -16,6 +18,8 @@ const hightlight_grid = {
 }
 
 const board = [];
+
+let turn = 0;
 
 function LoadImages() {
     
@@ -152,6 +156,7 @@ function GameLogic() {
 }
 
 function HandleClick(event) {
+    let move_made = false;
     let rect = canvas.getBoundingClientRect();
     let x = event.clientX - rect.left;
     let y = event.clientY - rect.top;
@@ -160,22 +165,41 @@ function HandleClick(event) {
     let piece = board[row * 8 + col];
     if (piece != null) {
         // piece is on attacker side?
-        if (/*PieceIsOnAttackerSide()*/true) {
+        if (turn == piece.getColor()) {
             hightlight_grid.c = col;
             hightlight_grid.r = row;
         } else {
-            if (IsAttackValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
-                
+            if (-1 != hightlight_grid.c && -1 != hightlight_grid.r) {
+                let from = board[hightlight_grid.r * 8 + hightlight_grid.c];
+                if (IsAttackValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
+                    board[row * 8 + col] = from;
+                    board[hightlight_grid.r * 8 + hightlight_grid.c] = null;
+                    hightlight_grid.r = -1;
+                    hightlight_grid.c = -1;
+                    move_made = true;
+                }
             }
         }
     } else if (-1 != hightlight_grid.c && -1 != hightlight_grid.r) {
         let from = board[hightlight_grid.r * 8 + hightlight_grid.c];
-        if (IsMoveValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
-            board[row * 8 + col] = board[hightlight_grid.r * 8 + hightlight_grid.c];
+        if (from.getType() == 1 && Math.abs(hightlight_grid.r - row) == Math.abs(hightlight_grid.c - col)
+        && row - hightlight_grid.r == -1) {
+            if (InBounds({c:col, r: row + 1}) && board[(row + 1) * 8 + col] != null && board[(row + 1) * 8 + col].getType() == 1) {
+                board[row * 8 + col] = from;
+                board[hightlight_grid.r * 8 + hightlight_grid.c] = null;
+                board[(row + 1) * 8 + col] = null;
+                move_made = true;
+            }
+        } else if (IsMoveValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
+            board[row * 8 + col] = from;
             board[hightlight_grid.r * 8 + hightlight_grid.c] = null;
             hightlight_grid.r = -1;
             hightlight_grid.c = -1;
+            move_made = true;
         }
+    }
+    if (move_made) {
+        turn = turn == 0 ? 1 : 0;
     }
 }
 

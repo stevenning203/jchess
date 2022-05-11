@@ -64,8 +64,10 @@ export function IsMoveValid(piece, from, to, board, flag = false, ignore_check =
             // need promotion mechanics
             break;
         case 2:
-            // CHECK IF KING IS IN CHECK TO MOVE...
-            // CASLTING NEEDED TOO..
+            if (delta_r <= 1 && delta_c <= 1 && !IsCollision() && !IsKingExposed()) {
+                move_ok = true;
+            }
+            // CASLTING NEEDED TOO...
             break;
         case 3: {
             if ((delta_r == 2 && delta_c == 1) || (delta_c == 2 && delta_r == 1)) {

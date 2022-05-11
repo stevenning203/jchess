@@ -11,6 +11,7 @@ import { context } from "./logic.js";
 import { WIDTH } from "./logic.js";
 import { HEIGHT } from "./logic.js";
 import { GRID_SIZE } from "./logic.js";
+import { Polarize } from "./logic.js";
 
 const hightlight_grid = {
     r: -1,
@@ -149,6 +150,10 @@ function GameLogic() {
 }
 
 function HandleClick(event) {
+    function ResetGrid() {
+        hightlight_grid.r = -1;
+        hightlight_grid.c = -1;
+    }
     let move_made = false;
     let rect = canvas.getBoundingClientRect();
     let x = event.clientX - rect.left;
@@ -167,8 +172,7 @@ function HandleClick(event) {
                 if (IsAttackValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
                     board[row * 8 + col] = from;
                     board[RCToIndex(hightlight_grid)] = null;
-                    hightlight_grid.r = -1;
-                    hightlight_grid.c = -1;
+                    ResetGrid();
                     move_made = true;
                 }
             }
@@ -176,18 +180,19 @@ function HandleClick(event) {
     } else if (-1 != hightlight_grid.c && -1 != hightlight_grid.r) {
         let from = board[hightlight_grid.r * 8 + hightlight_grid.c];
         if (from.getType() == 1 && Math.abs(hightlight_grid.r - row) == Math.abs(hightlight_grid.c - col)
-        && row - hightlight_grid.r == -1) {
-            if (InBounds({c:col, r: row + 1}) && board[(row + 1) * 8 + col] != null && board[(row + 1) * 8 + col].getType() == 1) {
+        && row - hightlight_grid.r == Polarize(from.getColor())) {
+            // need to move this into legal moves or else king can attack a pawn that attacks in resulting in a 
+            // invalid board.
+            if (InBounds({c:col, r: row - Polarize(from.getColor())}) && board[(row - Polarize(from.getColor())) * 8 + col] != null && board[(row - Polarize(from.getColor())) * 8 + col].getType() == 1) {
                 board[row * 8 + col] = from;
                 board[RCToIndex(hightlight_grid)] = null;
-                board[(row + 1) * 8 + col] = null;
+                board[(row - Polarize(from.getColor())) * 8 + col] = null;
                 move_made = true;
             }
         } else if (IsMoveValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
             board[row * 8 + col] = from;
             board[RCToIndex(hightlight_grid)] = null;
-            hightlight_grid.r = -1;
-            hightlight_grid.c = -1;
+            ResetGrid();
             move_made = true;
         }
     }

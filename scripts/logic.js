@@ -1,4 +1,11 @@
-export function IsMoveValid(piece, from, to, board, flag) {
+export const canvas = document.querySelector("canvas");
+export const context = canvas.getContext("2d");
+export const rect = canvas.getBoundingClientRect();
+export const WIDTH = rect.width;
+export const GRID_SIZE = WIDTH / 8;
+export const HEIGHT = WIDTH;
+
+export function IsMoveValid(piece, from, to, board, flag = false, ignore_check = false) {
     if (!flag && board[to.r * 8 + to.c] != null) {
         return false;
     }
@@ -32,8 +39,10 @@ export function IsMoveValid(piece, from, to, board, flag) {
         return false;
     }
     function IsKingExposed() {
-        // stub
-        return false;
+        if (ignore_check) {
+            return false;
+        }
+        return MoveExposesKing(board, from, to, piece.getColor());
     }
     let move_ok = false;
     let delta_r = Math.abs(from.r - to.r);
@@ -42,12 +51,12 @@ export function IsMoveValid(piece, from, to, board, flag) {
         case 1:
             if (delta_c == 0) {
                 if (piece.getSpecial()[0]) {
-                    if (from.r - to.r == -Polarize(piece.getColor()) || from.r - to.r == -2 * Polarize(piece.getColor())) {
+                    if (!IsKingExposed() && (from.r - to.r == -Polarize(piece.getColor()) || from.r - to.r == -2 * Polarize(piece.getColor()))) {
                         move_ok = true;
                         piece.getSpecial()[0] = false;
                     }
                     piece.getSpecial()[1] =  !(from.r - to.r == -2 * Polarize(piece.getColor()));
-                } else if (from.r - to.r == -Polarize(piece.getColor())) {
+                } else if (!IsKingExposed() && (from.r - to.r == -Polarize(piece.getColor()))) {
                     move_ok = true;
                     piece.getSpecial()[1] = true;
                 }
@@ -105,6 +114,68 @@ export function Polarize(x) {
     return (x == 0) ? -1 : 1;
 }
 
-export function KingIsInCheck(board) {
-    
+function MoveExposesKing(board, from, to, king_color) {
+    TemporaryMovement(board, from, to);
+    let x = KingIsInCheck(board, king_color);
+    ResetTemporaryMovement(board, from, to);
+    return x;
+}
+
+function KingIsInCheck(board, king_color) {
+    let rc = GetKingLocation(board, king_color);
+    for (let i = 0; i < 64; i++) {
+        let q = board[i];
+        if (q != null && q.getColor() != king_color) {
+            if (IsMoveValid(q, IndexToRC(i), rc, board, true, true)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+export function IndexToCoordinates(i) {
+    return {
+        x: (i % 8) * GRID_SIZE,
+        y: Math.floor(i / 8) * GRID_SIZE
+    };
+}
+
+export function IndexToRC(i) {
+    return {
+        c: (i % 8),
+        r: Math.floor(i / 8)
+    };
+}
+
+export function RCToIndex(rc) {
+    return rc.r * 8 + rc.c;
+}
+
+function GetKingLocation(board, king_color) {
+    for (let i = 0; i < 64; i++) {
+        let q = board[i];
+        if (q == null) {
+            continue;
+        }
+        if (q.getType() == 2 && q.getColor() == king_color) {
+            return IndexToRC(i);
+        }
+    }
+    throw "Error, king not found.";
+}
+
+function TemporaryMovement(board, from, to) {
+    board[64] = board[RCToIndex(to)];
+    board[RCToIndex(to)] = board[RCToIndex(from)];
+    board[RCToIndex(from)] = null;
+}
+
+function ResetTemporaryMovement(board, from, to) {
+    if (board[RCToIndex(from)] != null) {
+        throw "Error - expected null but piece was at 'from'" + "... invalid state of board";
+    }
+    board[RCToIndex(from)] = board[RCToIndex(to)];
+    board[RCToIndex(to)] = board[64];
+    board[64] = null;
 }

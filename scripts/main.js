@@ -3,15 +3,15 @@ import { Piece } from "./piece.js";
 import { IsMoveValid } from "./logic.js";
 import { InBounds } from "./logic.js";
 import { IsAttackValid } from "./logic.js";
+import { IndexToCoordinates } from "./logic.js";
+import { RCToIndex } from "./logic.js";
+import { canvas } from "./logic.js";
+import { rect } from "./logic.js";
+import { context } from "./logic.js";
+import { WIDTH } from "./logic.js";
+import { HEIGHT } from "./logic.js";
+import { GRID_SIZE } from "./logic.js";
 
-const images_array = [];
-
-const canvas = document.querySelector("canvas");
-const context = canvas.getContext("2d");
-let rect = canvas.getBoundingClientRect();
-const WIDTH = rect.width;
-const HEIGHT = WIDTH;
-const GRID_SIZE = WIDTH / 8;
 const hightlight_grid = {
     r: -1,
     c: -1,
@@ -144,13 +144,6 @@ function DrawPieces() {
     }
 }
 
-function IndexToCoordinates(i) {
-    return {
-        x: (i % 8) * GRID_SIZE,
-        y: Math.floor(i / 8) * GRID_SIZE
-    };
-}
-
 function GameLogic() {
     
 }
@@ -173,7 +166,7 @@ function HandleClick(event) {
                 let from = board[hightlight_grid.r * 8 + hightlight_grid.c];
                 if (IsAttackValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
                     board[row * 8 + col] = from;
-                    board[hightlight_grid.r * 8 + hightlight_grid.c] = null;
+                    board[RCToIndex(hightlight_grid)] = null;
                     hightlight_grid.r = -1;
                     hightlight_grid.c = -1;
                     move_made = true;
@@ -186,13 +179,13 @@ function HandleClick(event) {
         && row - hightlight_grid.r == -1) {
             if (InBounds({c:col, r: row + 1}) && board[(row + 1) * 8 + col] != null && board[(row + 1) * 8 + col].getType() == 1) {
                 board[row * 8 + col] = from;
-                board[hightlight_grid.r * 8 + hightlight_grid.c] = null;
+                board[RCToIndex(hightlight_grid)] = null;
                 board[(row + 1) * 8 + col] = null;
                 move_made = true;
             }
         } else if (IsMoveValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
             board[row * 8 + col] = from;
-            board[hightlight_grid.r * 8 + hightlight_grid.c] = null;
+            board[RCToIndex(hightlight_grid)] = null;
             hightlight_grid.r = -1;
             hightlight_grid.c = -1;
             move_made = true;

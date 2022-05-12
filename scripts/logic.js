@@ -105,7 +105,7 @@ export function IsMoveValid(piece, from, to, board, flag = false, ignore_check =
 export function IsAttackValid(piece, from, to, board) {
     if (piece.getType() == 1) {
         if (Math.abs(from.c - to.c) == 1) {
-            return to.r - from.r == Polarize(piece.getColor()) && to.r - from.r == -1;
+            return to.r - from.r == Polarize(piece.getColor()) && !MoveExposesKing(board, from, to, piece.getColor());
         } else {
             return false;
         }

@@ -4,6 +4,7 @@ export const rect = canvas.getBoundingClientRect();
 export const WIDTH = rect.width;
 export const GRID_SIZE = WIDTH / 8;
 export const HEIGHT = WIDTH;
+export let turn_number = 0;
 
 export function IsMoveValid(piece, from, to, board, flag = false, ignore_check = false) {
     if (!flag && board[to.r * 8 + to.c] != null) {
@@ -56,6 +57,7 @@ export function IsMoveValid(piece, from, to, board, flag = false, ignore_check =
                         piece.getSpecial()[0] = false;
                     }
                     piece.getSpecial()[1] =  !(from.r - to.r == -2 * Polarize(piece.getColor()));
+                    piece.getSpecial()[2] = turn_number;
                 } else if (!IsKingExposed() && (from.r - to.r == -Polarize(piece.getColor()))) {
                     move_ok = true;
                     piece.getSpecial()[1] = true;
@@ -93,6 +95,9 @@ export function IsMoveValid(piece, from, to, board, flag = false, ignore_check =
             }
             break;
         }
+    }
+    if (move_ok) {
+        turn_number++;
     }
     return move_ok;
 }

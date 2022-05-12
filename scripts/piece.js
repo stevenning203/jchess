@@ -12,7 +12,7 @@ export class Piece {
         this.#color = color;
         this.#offset_x = Math.floor((grid_size - image.width) / 2);
         this.#offest_y = Math.floor((grid_size - image.height) / 2);
-        this.#special = [true, true];
+        this.#special = [true, true, 0];
     }
 
     getSpecial() {

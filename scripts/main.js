@@ -1,6 +1,6 @@
 import { LoadImage } from "./image_loader.js";
 import { Piece } from "./piece.js";
-import { IsMoveValid } from "./logic.js";
+import { IsMoveValid, turn_number } from "./logic.js";
 import { InBounds } from "./logic.js";
 import { IsAttackValid } from "./logic.js";
 import { IndexToCoordinates } from "./logic.js";
@@ -183,7 +183,9 @@ function HandleClick(event) {
         && row - hightlight_grid.r == Polarize(from.getColor())) {
             // need to move this into legal moves or else king can attack a pawn that attacks in resulting in a 
             // invalid board.
-            if (InBounds({c:col, r: row - Polarize(from.getColor())}) && board[(row - Polarize(from.getColor())) * 8 + col] != null && board[(row - Polarize(from.getColor())) * 8 + col].getType() == 1) {
+            // en passant works even when piece did not move last turn which needs to be fixed.
+            if (InBounds({c:col, r: row - Polarize(from.getColor())}) && board[(row - Polarize(from.getColor())) * 8 + col] != null && board[(row - Polarize(from.getColor())) * 8 + col].getType() == 1
+            && turn_number - board[(row - Polarize(from.getColor())) * 8 + col].getSpecial()[2] === 1) {
                 board[row * 8 + col] = from;
                 board[RCToIndex(hightlight_grid)] = null;
                 board[(row - Polarize(from.getColor())) * 8 + col] = null;

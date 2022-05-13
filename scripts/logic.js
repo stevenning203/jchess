@@ -72,7 +72,7 @@ export function IsMoveValid(piece, from, to, board, flag = false, ignore_check =
             // CASLTING NEEDED TOO...
             break;
         case 3: {
-            if ((delta_r == 2 && delta_c == 1) || (delta_c == 2 && delta_r == 1)) {
+            if (((delta_r == 2 && delta_c == 1) || (delta_c == 2 && delta_r == 1)) && !IsKingExposed()) {
                 move_ok = true;
             }
             break;
@@ -102,15 +102,16 @@ export function IsMoveValid(piece, from, to, board, flag = false, ignore_check =
     return move_ok;
 }
 
-export function IsAttackValid(piece, from, to, board) {
+export function IsAttackValid(piece, from, to, board, flag = false) {
     if (piece.getType() == 1) {
         if (Math.abs(from.c - to.c) == 1) {
+            turn_number++;
             return to.r - from.r == Polarize(piece.getColor()) && !MoveExposesKing(board, from, to, piece.getColor());
         } else {
             return false;
         }
     }
-    return IsMoveValid(piece, from, to, board, true);
+    return IsMoveValid(piece, from, to, board, true, flag);
 }
 
 export function InBounds(rowcol) {
@@ -133,7 +134,7 @@ function KingIsInCheck(board, king_color) {
     for (let i = 0; i < 64; i++) {
         let q = board[i];
         if (q != null && q.getColor() != king_color) {
-            if (IsMoveValid(q, IndexToRC(i), rc, board, true, true)) {
+            if (IsAttackValid(q, IndexToRC(i), rc, board, true)) {
                 return true;
             }
         }

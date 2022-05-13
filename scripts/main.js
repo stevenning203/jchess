@@ -13,6 +13,8 @@ import { HEIGHT } from "./logic.js";
 import { GRID_SIZE } from "./logic.js";
 import { Polarize } from "./logic.js";
 
+let turn_counter = document.getElementById("sidebar-turn-count");
+
 const hightlight_grid = {
     r: -1,
     c: -1,
@@ -200,6 +202,7 @@ function HandleClick(event) {
     }
     if (move_made) {
         turn = turn == 0 ? 1 : 0;
+        turn_counter.innerHTML = turn_number;
     }
 }
 

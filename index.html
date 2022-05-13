@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>jchess by Steven Ning</title>
         <link rel = "stylesheet" href = "./index.css">
         <nav>
-            <button>
-                Credits: Chess pieces from CC-BY-SA 3.0 "Chess Pieces and Board squares" by JohnPablok
-                <br />
-                Modifications: Changed canvas size of all to 600x600 px
-            </button>
+            
         </nav>
     </head>
     <body>
         <div id = "wrapper">
             <canvas width = "480px" height = "480px"></canvas>
+            <div id = "sidebar">
+                Turn Count: <span id = "sidebar-turn-count">0</span>
+                <span id = "sidebar-"></span>
+            </div>
         </div>
+        <footer>Credits: Chess pieces from CC-BY-SA 3.0 "Chess Pieces and Board squares" by JohnPablok
+            Modifications: Changed canvas size of all to 600x600 px</footer>
         <script type = "module" src = "./scripts/main.js"></script>
     </body>
 </html>

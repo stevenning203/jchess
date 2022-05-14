@@ -129,7 +129,7 @@ function MoveExposesKing(board, from, to, king_color) {
     return x;
 }
 
-function KingIsInCheck(board, king_color) {
+export function KingIsInCheck(board, king_color) {
     let rc = GetKingLocation(board, king_color);
     for (let i = 0; i < 64; i++) {
         let q = board[i];
@@ -160,7 +160,7 @@ export function RCToIndex(rc) {
     return rc.r * 8 + rc.c;
 }
 
-function GetKingLocation(board, king_color) {
+export function GetKingLocation(board, king_color) {
     for (let i = 0; i < 64; i++) {
         let q = board[i];
         if (q == null) {

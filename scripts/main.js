@@ -1,6 +1,6 @@
 import { LoadImage } from "./image_loader.js";
 import { Piece } from "./piece.js";
-import { IsMoveValid, turn_number } from "./logic.js";
+import { GetKingLocation, IsMoveValid, KingIsInCheck, turn_number } from "./logic.js";
 import { InBounds } from "./logic.js";
 import { IsAttackValid } from "./logic.js";
 import { IndexToCoordinates } from "./logic.js";
@@ -18,6 +18,11 @@ let turn_counter = document.getElementById("sidebar-turn-count");
 const hightlight_grid = {
     r: -1,
     c: -1,
+}
+
+const check_grid = {
+    r: -1,
+    c: -1
 }
 
 const board = [];
@@ -126,6 +131,8 @@ function DrawBoard() {
         let c = IndexToCoordinates(i);
         if (c.x / GRID_SIZE === hightlight_grid.c && c.y / GRID_SIZE === hightlight_grid.r) {
             context.fillStyle = "#719173";
+        } else if (c.x / GRID_SIZE === check_grid.c && c.y / GRID_SIZE === check_grid.r) {
+            context.fillStyle = "#D11";
         } else if ((i + Math.floor(i / 8)) % 2 == 0) {
             context.fillStyle = '#826133';
         } else {
@@ -203,6 +210,18 @@ function HandleClick(event) {
     if (move_made) {
         turn = turn == 0 ? 1 : 0;
         turn_counter.innerHTML = turn_number;
+        if (KingIsInCheck(board, 0)) {
+            let rc = GetKingLocation(board, 0);
+            check_grid.r = rc.r;
+            check_grid.c = rc.c;
+        } else if (KingIsInCheck(board, 1)) {
+            let rc = GetKingLocation(board, 1);
+            check_grid.c = rc.c;
+            check_grid.r = rc.r;
+        } else {
+            check_grid.c = -1;
+            check_grid.r = -1;
+        }
     }
 }
 

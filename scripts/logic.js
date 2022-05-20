@@ -6,7 +6,27 @@ export const GRID_SIZE = WIDTH / 8;
 export const HEIGHT = WIDTH;
 export let turn_number = 0;
 
-export function IsMoveValid(piece, from, to, board, flag = false, ignore_check = false) {
+export function CanPieceAttackKing(piece, from, to, board) {
+    return IsMoveValid(piece, from, to, board, true, true);
+}
+
+export function IsPlayerMoveValid(piece, from, to, board) {
+    let res = IsMoveValid(piece, from, to, board, false, false);
+    if (res) {
+        turn_number++;
+    }
+    return res;
+}
+
+export function IsPlayerAttackValid(piece, from, to, board) {
+    let res = IsAttackValid(piece, from, to, board, false);
+    if (res) {
+        turn_number++;
+    }
+    return res;
+}
+
+function IsMoveValid(piece, from, to, board, flag = false, ignore_check = false) {
     if (!flag && board[to.r * 8 + to.c] != null) {
         return false;
     }
@@ -96,16 +116,12 @@ export function IsMoveValid(piece, from, to, board, flag = false, ignore_check =
             break;
         }
     }
-    if (move_ok) {
-        turn_number++;
-    }
     return move_ok;
 }
 
-export function IsAttackValid(piece, from, to, board, flag = false) {
+function IsAttackValid(piece, from, to, board, flag = false) {
     if (piece.getType() == 1) {
         if (Math.abs(from.c - to.c) == 1) {
-            turn_number++;
             return to.r - from.r == Polarize(piece.getColor()) && !MoveExposesKing(board, from, to, piece.getColor());
         } else {
             return false;
@@ -186,4 +202,8 @@ function ResetTemporaryMovement(board, from, to) {
     board[RCToIndex(from)] = board[RCToIndex(to)];
     board[RCToIndex(to)] = board[64];
     board[64] = null;
+}
+
+export function IncrementTurnNumber() {
+
 }

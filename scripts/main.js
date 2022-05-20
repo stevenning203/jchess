@@ -1,8 +1,7 @@
 import { LoadImage } from "./image_loader.js";
 import { Piece } from "./piece.js";
-import { GetKingLocation, IsMoveValid, KingIsInCheck, turn_number } from "./logic.js";
+import { GetKingLocation, IncrementTurnNumber, IsPlayerAttackValid, IsPlayerMoveValid, KingIsInCheck, turn_number } from "./logic.js";
 import { InBounds } from "./logic.js";
-import { IsAttackValid } from "./logic.js";
 import { IndexToCoordinates } from "./logic.js";
 import { RCToIndex } from "./logic.js";
 import { canvas } from "./logic.js";
@@ -178,7 +177,7 @@ function HandleClick(event) {
         } else {
             if (-1 != hightlight_grid.c && -1 != hightlight_grid.r) {
                 let from = board[hightlight_grid.r * 8 + hightlight_grid.c];
-                if (IsAttackValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
+                if (IsPlayerAttackValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
                     board[row * 8 + col] = from;
                     board[RCToIndex(hightlight_grid)] = null;
                     ResetGrid();
@@ -200,7 +199,7 @@ function HandleClick(event) {
                 board[(row - Polarize(from.getColor())) * 8 + col] = null;
                 move_made = true;
             }
-        } else if (IsMoveValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
+        } else if (IsPlayerMoveValid(from, {r: hightlight_grid.r, c: hightlight_grid.c}, {r: row, c: col}, board)) {
             board[row * 8 + col] = from;
             board[RCToIndex(hightlight_grid)] = null;
             ResetGrid();
